@@ -1,7 +1,20 @@
 fn main() {
-    let parsed: i32 = "5".parse().unwrap();
-    let turbo_parsed = "10".parse::<i32>().unwrap();
+    let x = 5u32;
 
-    let sum = parsed + turbo_parsed;
-    println!("Sum: {:?}", sum);
+    let y = {
+        let x_squared = x * x;
+        let x_cube = x_squared * x;
+
+        // This expression will be assigned to `y`
+        x_cube + x_squared + x
+    };
+
+    let z = {
+        // The semicolon suppresses this expression and `()` is assigned to `z`
+        2 * x;
+    };
+
+    println!("x is {:?}", x);
+    println!("y is {:?}", y);
+    println!("z is {:?}", z);
 }
