@@ -1,42 +1,28 @@
+#[allow(dead_code)]
+enum Temperature {
+    Celsius(i32),
+    Fahrenheit(i32),
+}
+
 fn main() {
-    struct Foo {
-        x: (u32, u32),
-        y: u32,
+    let temperature = Temperature::Celsius(35);
+    // ^ TODO try different values for `temperature`
+
+    match temperature {
+        Temperature::Celsius(t) if t > 30 => println!("{}C is above 30 Celsius", t),
+        // The `if condition` part ^ is a guard
+        Temperature::Celsius(t) => println!("{}C is equal to or below 30 Celsius", t),
+
+        Temperature::Fahrenheit(t) if t > 86 => println!("{}F is above 86 Fahrenheit", t),
+        Temperature::Fahrenheit(t) => println!("{}F is equal to or below 86 Fahrenheit", t),
     }
 
-    // Try changing the values in the struct to see what happens
-    let foo = Foo { x: (1, 2), y: 3 };
+    let number: u8 = 4;
 
-    match foo {
-        Foo { x: (1, b), y } => println!("First of x is 1, b = {},  y = {} ", b, y),
-
-        // you can destructure structs and rename the variables,
-        // the order is not important
-        Foo { y: 2, x: i } => println!("y is 2, i = {:?}", i),
-
-        // and you can also ignore some variables:
-        Foo { y, .. } => println!("y = {}, we don't care about x", y),
-        // this will give an error: pattern does not mention field `x`
-        //Foo { y } => println!("y = {}", y),
+    match number {
+        i if i == 0 => println!("Zero"),
+        i if i > 0 => println!("Greater than zero"),
+        _ => unreachable!("Should never happen."),
+        // TODO ^ uncomment to fix compilation
     }
-
-    let faa = Foo { x: (1, 2), y: 3 };
-
-    // You do not need a match block to destructure structs:
-    let Foo { x: x0, y: y0 } = faa;
-    println!("Outside: x0 = {x0:?}, y0 = {y0}");
-
-    // Destructuring works with nested structs as well:
-    struct Bar {
-        foo: Foo,
-    }
-
-    let bar = Bar { foo: faa };
-    let Bar {
-        foo: Foo {
-            x: nested_x,
-            y: nested_y,
-        },
-    } = bar;
-    println!("Nested: nested_x = {nested_x:?}, nested_y = {nested_y:?}");
 }
