@@ -1,62 +1,101 @@
-use std::mem;
+// An attribute to hide warnings for unused code.
+#![allow(dead_code)]
 
-// This function borrows a slice.
-fn analyze_slice(slice: &[i32]) {
-    println!("First element of the slice: {}", slice[0]);
-    println!("The slice has {} elements", slice.len());
+#[derive(Debug)]
+struct Person {
+    name: String,
+    age: u8,
+}
+
+// A unit struct
+struct Unit;
+
+// A tuple struct
+struct Pair(i32, f32);
+
+#[derive(Debug)]
+struct Banana {
+    name: String,
+    size: f32,
+}
+
+// A struct with two fields
+struct Point {
+    x: f32,
+    y: f32,
+}
+
+// Structs can be reused as fields of another struct
+struct Rectangle {
+    // A rectangle can be specified by where the top left and bottom right
+    // corners are in space.
+    top_left: Point,
+    bottom_right: Point,
 }
 
 fn main() {
-    // Fixed-size array (type signature is superfluous).
-    let mut xs: [i32; 5] = [1, 2, 3, 4, 5];
+    // Create struct with field init shorthand
+    let name = String::from("Peter");
+    let age = 27;
+    let peter = Person { name, age };
 
-    // let ab = &mut xs[0..=2];
-    // let ba = &mut xs[3..=4];
-    // println!("{ab:?}, {ba:?}");
+    let b = Banana {
+        name: String::from("steve"),
+        size: 1.0,
+    };
 
-    // All elements can be initialized to the same value.
-    let ys: [i32; 500] = [0; 500];
+    // Print debug struct
+    println!("{:?}", b);
 
-    // Indexing starts at 0.
-    println!("First element of the array: {}", xs[0]);
-    println!("Second element of the array: {}", xs[1]);
+    // Print debug struct
+    println!("{:?}", peter);
 
-    // `len` returns the count of elements in the array.
-    println!("Number of elements in array: {}", xs.len());
+    // Instantiate a `Point`
+    let point: Point = Point { x: 10.3, y: 0.4 };
+    let another_point: Point = Point { x: 5.2, y: 0.2 };
 
-    // Arrays are stack allocated.
-    println!("Array occupies {} bytes", mem::size_of_val(&xs));
+    // Access the fields of the point
+    println!("point coordinates: ({}, {})", point.x, point.y);
 
-    // Arrays can be automatically borrowed as slices.
-    println!("Borrow the whole array as a slice.");
-    analyze_slice(&xs);
+    // Make a new point by using struct update syntax to use the fields of our
+    // other one
+    let bottom_right = Point {
+        x: 5.2,
+        ..another_point
+    };
 
-    // Slices can point to a section of an array.
-    // They are of the form [starting_index..ending_index].
-    // `starting_index` is the first position in the slice.
-    // `ending_index` is one more than the last position in the slice.
-    println!("Borrow a section of the array as a slice.");
-    analyze_slice(&ys[1..4]);
+    // `bottom_right.y` will be the same as `point.y` because we used that field
+    // from `point`
+    println!("second point: ({}, {})", bottom_right.x, bottom_right.y);
 
-    // Example of empty slice `&[]`:
-    let empty_array: [u32; 0] = [];
-    assert_eq!(empty_array, []);
-    assert_eq!(&empty_array, &[][..]); // Same but more verbose
+    // Destructure the point using a `let` binding
+    let Point {
+        x: left_edge,
+        y: top_edge,
+    } = point;
 
-    // Arrays can be safely accessed using `.get`, which returns an
-    // `Option`. This can be matched as shown below, or used with
-    // `.expect()` if you would like the program to exit with a nice
-    // message instead of happily continue.
-    for i in 0..=xs.len() {
-        // Oops, one element too far!
-        match xs.get(i) {
-            Some(xval) => println!("{}: {}", i, xval),
-            None => println!("Slow down! {} is too far!", i),
-        }
-    }
+    println!("{} {}", left_edge, top_edge);
 
-    // Out of bound indexing on array causes compile time error.
-    //println!("{}", xs[5]);
-    // Out of bound indexing on slice causes runtime error.
-    //println!("{}", xs[..][5]);
+    let _rectangle = Rectangle {
+        // struct instantiation is an expression too
+        top_left: Point {
+            x: left_edge,
+            y: top_edge,
+        },
+        bottom_right: bottom_right,
+    };
+
+    // Instantiate a unit struct
+    let _unit = Unit;
+
+    // Instantiate a tuple struct
+    let pair = Pair(1, 0.1);
+
+    // Access the fields of a tuple struct
+    println!("pair contains {:?} and {:?}", pair.0, pair.1);
+
+    // Destructure a tuple struct
+    let Pair(integer, decimal) = pair;
+
+    println!("pair contains {:?} and {:?}", integer, decimal);
 }
