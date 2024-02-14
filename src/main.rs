@@ -1,27 +1,20 @@
-use std::str::FromStr;
-
-fn get_count_item(s: &str) -> (u64, &str) {
-    let mut it = s.split(' ');
-    // let (Some(count_str), Some(item)) = (it.next(), it.next()) else {
-    //     panic!("Can't segment count item pair: '{s}'");
-    // };
-    // let Ok(count) = u64::from_str(count_str) else {
-    //     panic!("Can't parse integer: '{count_str}'");
-    // };
-
-    let (count_str, item) = match (it.next(), it.next()) {
-        (Some(count_str), Some(item)) => (count_str, item),
-        _ => panic!("Can't segment count ictem pair: '{s}'"),
-    };
-    let count = if let Ok(count) = u64::from_str(count_str) {
-        count
-    } else {
-        panic!("Can't parse integer: '{count_str}'");
-    };
-
-    (count, item)
-}
-
 fn main() {
-    assert_eq!(get_count_item("3 chairs"), (3, "chairs"));
+    // Make `optional` of type `Option<i32>`
+    let mut optional = Some(0);
+
+    // This reads: "while `let` destructures `optional` into
+    // `Some(i)`, evaluate the block (`{}`). Else `break`.
+    while let Some(i) = optional {
+        if i > 9 {
+            println!("Greater than 9, quit!");
+            optional = None;
+        } else {
+            println!("`i` is `{:?}`. Try again.", i);
+            optional = Some(i + 1);
+        }
+        // ^ Less rightward drift and doesn't require
+        // explicitly handling the failing case.
+    }
+    // ^ `if let` had additional optional `else`/`else if`
+    // clauses. `while let` does not have these.
 }
