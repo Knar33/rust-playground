@@ -1,21 +1,19 @@
 fn main() {
-    println!("{}", find_length_of_lcis(vec![1,2,3,4,3,5] as Vec<i32>));
+    println!("{:?}", two_sum(vec![1,2,3,4,3,5] as Vec<i32>, 7i32));
 }
 
-pub fn find_length_of_lcis(nums: Vec<i32>) -> i32 {
-    let mut longest: i32 = 1;
+pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
     for i in 0..nums.len() - 1 {
-        let mut length: i32 = 1;
-        for j in i + 1..nums.len() {  
-            if nums[j] > nums[j-1] {
-                length += 1;
-            } else {
-                break;
+        let num1 = nums[i];
+        for j in 0..nums.len() {
+            if i == j {
+                continue;
+            }
+            let num2 = nums[j];
+            if num1 + num2 == target {
+                return vec![i as i32, j as i32]
             }
         }
-        if length > longest {
-            longest = length;
-        }
     }
-    longest
+    unreachable!()
 }
