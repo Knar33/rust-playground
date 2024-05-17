@@ -7,16 +7,14 @@ fn main() {
 }
 
 pub fn invert_tree(root: Option<Rc<RefCell<TreeNode>>>) -> Option<Rc<RefCell<TreeNode>>> {
-    match root {
-        Some(value) => {
-            let root_value = value.borrow();
-            let mut new_root = TreeNode::new(root_value.val);
-            new_root.left = invert_tree(root_value.right.clone());
-            new_root.right = invert_tree(root_value.left.clone());
-            Some(Rc::new(RefCell::new(new_root)))
-        }
-        None => None
+    if let Some(node) = &root {
+        let mut node_borrow = node.borrow_mut();
+        let left = node_borrow.left.take();
+        let right = node_borrow.right.take();
+        node_borrow.left = invert_tree(right);
+        node_borrow.right = invert_tree(left);
     }
+    root
 }
 
 #[derive(Debug, PartialEq, Eq)]
