@@ -1,8 +1,25 @@
 fn main() { 
-  println!("{:?}", remove_element(&mut vec![0,1,2,2,3,0,4,2], 2))
+  println!("{:?}", str_str("leetcode".to_string(), "leeto".to_string()))
 }
 
-pub fn remove_element(nums: &mut Vec<i32>, val: i32) -> i32 {
-    nums.retain(|&x| x != val);
-    nums.len() as i32
+pub fn str_str(haystack: String, needle: String) -> i32 {
+  let needle_len = needle.len();
+  let haystack_len = haystack.len();
+  if needle_len > haystack_len {
+    return -1
+  }
+  for i in 0..haystack_len - needle_len + 1 {
+    let mut matched = true;
+    for j in 0..needle_len {
+      if haystack.chars().nth(i + j).unwrap() != needle.chars().nth(j).unwrap() {
+        matched = false;
+        break;
+      }
+    }
+
+    if matched {
+      return i as i32
+    }
+  }
+  return -1
 }
