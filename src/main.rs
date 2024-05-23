@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 fn main() { 
 }
 
@@ -8,25 +10,40 @@ pub fn length_of_longest_substring(s: String) -> i32 {
   }
 
   let mut longest = 0;
+  let mut i = 0;
+  let mut j = 0;
 
-  for (i, ch) in s.chars().enumerate() {
-    let mut prev = ch;
+  //left pointer 
+  while i < s_len {
+    let mut chars: HashMap<u8, i32> = HashMap::with_capacity(512);
     let mut length = 1;
-    for j in i..s_len as usize {
-      if j == i{
-        continue
+    //right pointer
+    while j < s_len {
+      if j == i {
+        //second pointer is at first position
+        chars.insert(s.as_bytes()[j as usize], j);
+        j += 1;
+        continue;
+      } else {
+        //second pointer is ahead of first and in a valid spot
+        let j_char = s.as_bytes()[j as usize];
+        if chars.contains_key(&j_char) {
+          i = *chars.get(&j_char).unwrap() + 1;
+          j = i;
+          break;
+        }
+        chars.insert(j_char, j);
+        length += 1;
+        j += 1;
       }
-      let curr = s.chars().nth(j).unwrap();
-      if prev == curr {
-        break
-      }
-      length += 1;
     }
-    if length > longest {
+    if length > longest  {
       longest = length;
     }
+    if j == s_len {
+      break
+    }
   }
-
   longest
 }
 
@@ -36,6 +53,6 @@ mod tests {
 
     #[test]
     fn asserts() {
-      assert_eq!(length_of_longest_substring("abcabcbb".to_string()), 3);
+      assert_eq!(length_of_longest_substring("dvdf".to_string()), 2);
     }
 }
