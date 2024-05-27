@@ -1,71 +1,65 @@
+use std::collections::HashMap;
+
 fn main() { 
 }
 
-pub fn my_atoi(s: String) -> i32 {
-  let numerals = vec!['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+pub fn longest_palindrome(s: String) -> String {
+  let s_len: usize = s.len();
+  let s_chars = s.as_bytes().as_ref();
+  if s_len == 1 {
+    return s
+  }
 
-  let mut return_number = 0_i64;
-  let mut return_string = String::new();
+  let mut char_positions: HashMap<u8, Vec<usize>> = HashMap::new();
+  let mut longest_palindrome: String = String::new();
 
-  let mut whitespace = false;
-  let mut sign = false;
-  let mut leading_zeroes = false;
+  let mut i = 0; while i < s_len {
+    let s_char = s_chars[i];
+    char_positions.entry(s_char).or_insert(vec![i]).push(i);
+    i+=1;
+  }
 
-  for (i, si) in s.chars().enumerate() {
-    if !whitespace {
-      if si == ' ' {
-        continue
-      } else {
-        whitespace = true;
-      }
-    }
-    if !sign {
-      if si == '-' {
-        return_string.push(si);
-        sign = true;
-        continue
-      }
-      if si == '+' {
-        sign = true;
-        continue
-      }
-      sign = true;
-    }
+  for (pair_key, pair_value) in char_positions.iter() {
+    let mut intermediate_palindrome = String::new();
+    let pair_value_len = pair_value.len();
 
-    if numerals.contains(&si) {
-      if !leading_zeroes {
-        if si != '0' {
-          leading_zeroes = true;
-          return_string.push(si);
+    if pair_value_len == 1 {
+      intermediate_palindrome = pair_key.to_string();
+    } else {
+      let mut i = 0;
+      while i < pair_value_len {
+        let mut j = pair_value_len - 1;
+        while j > i {
+          if pair_value[j] - pair_value[i] + 1 < longest_palindrome.len() {
+            break
+          } 
+          let substring = &s_chars[pair_value[i]..=pair_value[j]];
+          if is_palindrome(substring) && substring.len() > intermediate_palindrome.len() {
+            intermediate_palindrome = String::from_utf8(substring.to_vec()).unwrap();
+            break
+          }
+          j -= 1;
         }
-      } else {
-        return_string.push(si);
+        i += 1;
       }
-    } else {
-      break
+    }
+    if intermediate_palindrome.len() > longest_palindrome.len() {
+      longest_palindrome = intermediate_palindrome;
     }
   }
+  longest_palindrome
+}
 
-  if return_string.len() == 0 || return_string == "_".to_string() || return_string == "+".to_string() || return_string == "-".to_string() {
-    return_string.push('0');
+pub fn is_palindrome(chars: &[u8]) -> bool {
+  let midpoint = (chars.len() as f32 / 2f32).ceil();
+  let mut i = 0;
+  while i < chars.len() {
+    if chars[i] != chars[chars.len() - i - 1] {
+      return false
+    }
+    i+=1;
   }
-
-  if return_string.len() > 11 {
-    if return_string.chars().next().unwrap() == '-' {
-      return std::i32::MIN;
-    } else {
-      return std::i32::MAX;
-    }
-  } else {
-    return_number = return_string.parse::<i64>().unwrap();
-    if return_number > std::i32::MAX as i64 {
-      return_number = std::i32::MAX as i64;
-    }
-    if return_number < std::i32::MIN as i64 {
-      return_number = std::i32::MIN as i64;
-    }
-  }
-  return_number as i32
+  true
 }
 
 #[cfg(test)]
@@ -74,8 +68,7 @@ mod tests {
 
     #[test]
     fn asserts() {
-      assert_eq!(my_atoi("-+12".to_string()), 0);
-      assert_eq!(my_atoi("42".to_string()), 42);
-      assert_eq!(my_atoi("   -042".to_string()), -42);
+      assert_eq!(longest_palindrome("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabcaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa".to_string()), "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+      //assert_eq!(longest_palindrome("cbbd".to_string()), "bb".to_string());
     }
 }
