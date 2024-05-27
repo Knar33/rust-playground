@@ -3,63 +3,24 @@ use std::collections::HashMap;
 fn main() { 
 }
 
-pub fn longest_palindrome(s: String) -> String {
-  let s_len: usize = s.len();
-  let s_chars = s.as_bytes().as_ref();
-  if s_len == 1 {
-    return s
-  }
+pub fn max_area(height: Vec<i32>) -> i32 {
+  let mut max_area = 0;
+  let mut i: i32 = 0;
+  let mut j: i32 = height.len() as i32 - 1;
 
-  let mut char_positions: HashMap<u8, Vec<usize>> = HashMap::new();
-  let mut longest_palindrome: String = String::new();
+  while i < j {
+    let w = j - i;
+    let h = height[j as usize].min(height[i as usize]);
+    let area = w * h;
+    max_area = max_area.max(area);
 
-  let mut i = 0; while i < s_len {
-    let s_char = s_chars[i];
-    char_positions.entry(s_char).or_insert(vec![i]).push(i);
-    i+=1;
-  }
-
-  for (pair_key, pair_value) in char_positions.iter() {
-    let mut intermediate_palindrome = String::new();
-    let pair_value_len = pair_value.len();
-
-    if pair_value_len == 1 {
-      intermediate_palindrome = pair_key.to_string();
+    if height[i as usize] > height[j as usize] {
+      j -= 1;
     } else {
-      let mut i = 0;
-      while i < pair_value_len {
-        let mut j = pair_value_len - 1;
-        while j > i {
-          if pair_value[j] - pair_value[i] + 1 < longest_palindrome.len() {
-            break
-          } 
-          let substring = &s_chars[pair_value[i]..=pair_value[j]];
-          if is_palindrome(substring) && substring.len() > intermediate_palindrome.len() {
-            intermediate_palindrome = String::from_utf8(substring.to_vec()).unwrap();
-            break
-          }
-          j -= 1;
-        }
-        i += 1;
-      }
-    }
-    if intermediate_palindrome.len() > longest_palindrome.len() {
-      longest_palindrome = intermediate_palindrome;
+      i += 1;
     }
   }
-  longest_palindrome
-}
-
-pub fn is_palindrome(chars: &[u8]) -> bool {
-  let midpoint = (chars.len() as f32 / 2f32).ceil();
-  let mut i = 0;
-  while i < chars.len() {
-    if chars[i] != chars[chars.len() - i - 1] {
-      return false
-    }
-    i+=1;
-  }
-  true
+  max_area
 }
 
 #[cfg(test)]
