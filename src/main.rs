@@ -1,19 +1,18 @@
-// `F` must implement `Fn` for a closure which takes no
-// inputs and returns nothing - exactly what is required
-// for `print`.
-fn apply<F>(f: F)
-where
-    F: Fn(),
-{
+// Define a function which takes a generic `F` argument
+// bounded by `Fn`, and calls it
+fn call_me<F: Fn()>(f: F) {
     f();
 }
 
+// Define a wrapper function satisfying the `Fn` bound
+fn function() {
+    println!("I'm a function!");
+}
+
 fn main() {
-    let x = 7;
+    // Define a closure satisfying the `Fn` bound
+    let closure = || println!("I'm a closure!");
 
-    // Capture `x` into an anonymous type and implement
-    // `Fn` for it. Store it in `print`.
-    let print = || println!("{}", x);
-
-    apply(print);
+    call_me(closure);
+    call_me(function);
 }
