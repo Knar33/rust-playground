@@ -1,37 +1,25 @@
 // An attribute to hide warnings for unused code.
 #![allow(dead_code)]
 
-enum Stage {
-    Beginner,
-    Advanced,
+// enum with implicit discriminator (starts at 0)
+enum Number {
+    Zero,
+    One,
+    Two,
 }
 
-enum Role {
-    Student,
-    Teacher,
+// enum with explicit discriminator
+enum Color {
+    Red = 0xff0000,
+    Green = 0x00ff00,
+    Blue = 0x0000ff,
 }
 
 fn main() {
-    // Explicitly `use` each name so they are available without
-    // manual scoping.
-    use crate::Stage::{Advanced, Beginner};
-    // Automatically `use` each name inside `Role`.
-    use crate::Role::*;
+    // `enums` can be cast as integers.
+    println!("zero is {}", Number::Zero as i32);
+    println!("one is {}", Number::One as i32);
 
-    // Equivalent to `Stage::Beginner`.
-    let stage = Beginner;
-    // Equivalent to `Role::Student`.
-    let role = Student;
-
-    match stage {
-        // Note the lack of scoping because of the explicit `use` above.
-        Beginner => println!("Beginners are starting their learning journey!"),
-        Advanced => println!("Advanced learners are mastering their subjects..."),
-    }
-
-    match role {
-        // Note again the lack of scoping.
-        Student => println!("Students are acquiring knowledge!"),
-        Teacher => println!("Teachers are spreading knowledge!"),
-    }
+    println!("roses are #{:06x}", Color::Red as i32);
+    println!("violets are #{:06x}", Color::Blue as i32);
 }
