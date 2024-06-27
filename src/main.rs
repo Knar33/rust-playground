@@ -24,5 +24,5 @@ fn main() {
     // Use underscores to improve readability!
     println!("One million is written as {}", 1_000_000u32);
 
-    //println!("{foo}");
+    println!("{}", 124i64);
 }
