@@ -1,21 +1,13 @@
-#![allow(unreachable_code, unused_labels)]
-
 fn main() {
-    'outer: loop {
-        println!("Entered the outer loop");
+    let mut counter = 0;
 
-        'inner: loop {
-            println!("Entered the inner loop");
+    let result = loop {
+        counter += 1;
 
-            // This would break only the inner loop
-            //break;
-
-            // This breaks the outer loop
-            break 'outer;
+        if counter == 10 {
+            break counter * 2;
         }
+    };
 
-        println!("This point will never be reached");
-    }
-
-    println!("Exited the outer loop");
+    assert_eq!(result, 20);
 }
