@@ -32,6 +32,8 @@ mod my {
         // We can also use `self` to access another module inside `my`:
         self::cool::function();
 
+        super::my::cool::function();
+
         // The `super` keyword refers to the parent scope (outside the `my` module).
         super::function();
 
