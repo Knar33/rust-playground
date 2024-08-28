@@ -1,25 +1,34 @@
+fn is_odd(n: u32) -> bool {
+    n % 2 == 1
+}
+
 fn main() {
-    let vec1 = vec![1, 2, 3];
-    let vec2 = vec![4, 5, 6];
+    println!("Find the sum of all the numbers with odd squares under 1000");
+    let upper = 1000;
 
-    // `iter()` for vecs yields `&i32`. Destructure to `i32`.
-    println!("2 in vec1: {}", vec1.iter().any(|&x| x == 2));
-    // `into_iter()` for vecs yields `i32`. No destructuring required.
-    println!("2 in vec2: {}", vec2.into_iter().any(|x| x == 2));
+    // Imperative approach
+    // Declare accumulator variable
+    let mut acc = 0;
+    // Iterate: 0, 1, 2, ... to infinity
+    for n in 0.. {
+        // Square the number
+        let n_squared = n * n;
 
-    // `iter()` only borrows `vec1` and its elements, so they can be used again
-    println!("vec1 len: {}", vec1.len());
-    println!("First element of vec1 is: {}", vec1[0]);
-    // `into_iter()` does move `vec2` and its elements, so they cannot be used again
-    // println!("First element of vec2 is: {}", vec2[0]);
-    // println!("vec2 len: {}", vec2.len());
-    // TODO: uncomment two lines above and see compiler errors.
+        if n_squared >= upper {
+            // Break loop if exceeded the upper limit
+            break;
+        } else if is_odd(n_squared) {
+            // Accumulate value, if it's odd
+            acc += n_squared;
+        }
+    }
+    println!("imperative style: {}", acc);
 
-    let array1 = [1, 2, 3];
-    let array2 = [4, 5, 6];
-
-    // `iter()` for arrays yields `&i32`.
-    println!("2 in array1: {}", array1.iter().any(|&x| x == 2));
-    // `into_iter()` for arrays yields `i32`.
-    println!("2 in array2: {}", array2.into_iter().any(|x| x == 2));
+    // Functional approach
+    let sum_of_squared_odd_numbers: u32 = (0..)
+        .map(|n| n * n) // All natural numbers squared
+        .take_while(|&n_squared| n_squared < upper) // Below upper limit
+        .filter(|&n_squared| is_odd(n_squared)) // That are odd
+        .sum(); // Sum them
+    println!("functional style: {}", sum_of_squared_odd_numbers);
 }
