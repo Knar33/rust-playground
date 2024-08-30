@@ -1,18 +1,27 @@
-// Define a function which takes a generic `F` argument
-// bounded by `Fn`, and calls it
-fn call_me<F: Fn()>(f: F) {
-    f();
+fn create_fn() -> impl Fn() {
+    let text = "Fn".to_owned();
+
+    move || println!("This is a: {}", text)
 }
 
-// Define a wrapper function satisfying the `Fn` bound
-fn function() {
-    println!("I'm a function!");
+fn create_fnmut() -> impl FnMut() {
+    let text = "FnMut".to_owned();
+
+    move || println!("This is a: {}", text)
+}
+
+fn create_fnonce() -> impl FnOnce() {
+    let text = "FnOnce".to_owned();
+
+    move || println!("This is a: {}", text)
 }
 
 fn main() {
-    // Define a closure satisfying the `Fn` bound
-    let closure = || println!("I'm a closure!");
+    let fn_plain = create_fn();
+    let mut fn_mut = create_fnmut();
+    let fn_once = create_fnonce();
 
-    call_me(closure);
-    call_me(function);
+    fn_plain();
+    fn_mut();
+    fn_once();
 }
