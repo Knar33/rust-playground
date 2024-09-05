@@ -1,28 +1,30 @@
-struct Val {
-    val: f64,
+// Non-copyable types.
+struct Empty;
+struct Null;
+
+// A trait generic over `T`.
+trait DoubleDrop<T> {
+    // Define a method on the caller type which takes an
+    // additional single parameter `T` and does nothing with it.
+    fn double_drop(self, _: T);
 }
 
-struct GenVal<T> {
-    gen_val: T,
-}
-
-// impl of Val
-impl Val {
-    fn value(&self) -> &f64 {
-        &self.val
-    }
-}
-
-// impl of GenVal for a generic type `T`
-impl<T> GenVal<T> {
-    fn value(&self) -> &T {
-        &self.gen_val
-    }
+// Implement `DoubleDrop<T>` for any generic parameter `T` and
+// caller `U`.
+impl<T, U> DoubleDrop<T> for U {
+    // This method takes ownership of both passed arguments,
+    // deallocating both.
+    fn double_drop(self, _: T) {}
 }
 
 fn main() {
-    let x = Val { val: 3.0 };
-    let y = GenVal { gen_val: 3i32 };
+    let empty = Empty;
+    let null = Null;
 
-    println!("{}, {}", x.value(), y.value());
+    // Deallocate `empty` and `null`.
+    empty.double_drop(null);
+
+    //empty;
+    //null;
+    // ^ TODO: Try uncommenting these lines.
 }
