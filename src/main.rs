@@ -1,30 +1,54 @@
-// Non-copyable types.
-struct Empty;
-struct Null;
+// A trait which implements the print marker: `{:?}`.
+use std::fmt::Debug;
 
-// A trait generic over `T`.
-trait DoubleDrop<T> {
-    // Define a method on the caller type which takes an
-    // additional single parameter `T` and does nothing with it.
-    fn double_drop(self, _: T);
+trait HasArea {
+    fn area(&self) -> f64;
 }
 
-// Implement `DoubleDrop<T>` for any generic parameter `T` and
-// caller `U`.
-impl<T, U> DoubleDrop<T> for U {
-    // This method takes ownership of both passed arguments,
-    // deallocating both.
-    fn double_drop(self, _: T) {}
+impl HasArea for Rectangle {
+    fn area(&self) -> f64 {
+        self.length * self.height
+    }
+}
+
+#[derive(Debug)]
+struct Rectangle {
+    length: f64,
+    height: f64,
+}
+#[allow(dead_code)]
+struct Triangle {
+    length: f64,
+    height: f64,
+}
+
+// The generic `T` must implement `Debug`. Regardless
+// of the type, this will work properly.
+fn print_debug<T: Debug>(t: &T) {
+    println!("{:?}", t);
+}
+
+// `T` must implement `HasArea`. Any type which meets
+// the bound can access `HasArea`'s function `area`.
+fn area<T: HasArea>(t: &T) -> f64 {
+    t.area()
 }
 
 fn main() {
-    let empty = Empty;
-    let null = Null;
+    let rectangle = Rectangle {
+        length: 3.0,
+        height: 4.0,
+    };
+    let _triangle = Triangle {
+        length: 3.0,
+        height: 4.0,
+    };
 
-    // Deallocate `empty` and `null`.
-    empty.double_drop(null);
+    print_debug(&rectangle);
+    println!("Area: {}", area(&rectangle));
 
-    //empty;
-    //null;
-    // ^ TODO: Try uncommenting these lines.
+    //print_debug(&_triangle);
+    //println!("Area: {}", area(&_triangle));
+    // ^ TODO: Try uncommenting these.
+    // | Error: Does not implement either `Debug` or `HasArea`.
 }
