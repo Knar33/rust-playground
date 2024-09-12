@@ -1,31 +1,40 @@
-struct Cardinal;
-struct BlueJay;
-struct Turkey;
-
-trait Red {}
-trait Blue {}
-
-impl Red for Cardinal {}
-impl Blue for BlueJay {}
-
-// These functions are only valid for types which implement these
-// traits. The fact that the traits are empty is irrelevant.
-fn red<T: Red>(_: &T) -> &'static str {
-    "red"
+struct Droppable {
+    name: &'static str,
 }
-fn blue<T: Blue>(_: &T) -> &'static str {
-    "blue"
+
+// This trivial implementation of `drop` adds a print to console.
+impl Drop for Droppable {
+    fn drop(&mut self) {
+        println!("> Dropping {}", self.name);
+    }
 }
 
 fn main() {
-    let cardinal = Cardinal;
-    let blue_jay = BlueJay;
-    let _turkey = Turkey;
+    let _a = Droppable { name: "a" };
 
-    // `red()` won't work on a blue jay nor vice versa
-    // because of the bounds.
-    println!("A cardinal is {}", red(&cardinal));
-    println!("A blue jay is {}", blue(&blue_jay));
-    //println!("A turkey is {}", red(&_turkey));
-    // ^ TODO: Try uncommenting this line.
+    // block A
+    {
+        let _b = Droppable { name: "b" };
+
+        // block B
+        {
+            let _c = Droppable { name: "c" };
+            let _d = Droppable { name: "d" };
+
+            println!("Exiting block B");
+        }
+        println!("Just exited block B");
+
+        println!("Exiting block A");
+    }
+    println!("Just exited block A");
+
+    // Variable can be manually dropped using the `drop` function
+    drop(_a);
+    // TODO ^ Try commenting this line
+
+    println!("end of the main function");
+
+    // `_a` *won't* be `drop`ed again here, because it already has been
+    // (manually) `drop`ed
 }
