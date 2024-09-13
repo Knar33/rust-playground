@@ -1,40 +1,23 @@
-struct Droppable {
-    name: &'static str,
-}
-
-// This trivial implementation of `drop` adds a print to console.
-impl Drop for Droppable {
-    fn drop(&mut self) {
-        println!("> Dropping {}", self.name);
-    }
-}
+use std::sync::Arc;
+use std::thread;
+use std::time::Duration;
 
 fn main() {
-    let _a = Droppable { name: "a" };
+    // This variable declaration is where its value is specified.
+    let apple = Arc::new("the same apple");
 
-    // block A
-    {
-        let _b = Droppable { name: "b" };
+    for _ in 0..10 {
+        // Here there is no value specification as it is a pointer to a
+        // reference in the memory heap.
+        let apple = Arc::clone(&apple);
 
-        // block B
-        {
-            let _c = Droppable { name: "c" };
-            let _d = Droppable { name: "d" };
-
-            println!("Exiting block B");
-        }
-        println!("Just exited block B");
-
-        println!("Exiting block A");
+        thread::spawn(move || {
+            // As Arc was used, threads can be spawned using the value allocated
+            // in the Arc variable pointer's location.
+            println!("{:?}", apple);
+        });
     }
-    println!("Just exited block A");
 
-    // Variable can be manually dropped using the `drop` function
-    drop(_a);
-    // TODO ^ Try commenting this line
-
-    println!("end of the main function");
-
-    // `_a` *won't* be `drop`ed again here, because it already has been
-    // (manually) `drop`ed
+    // Make sure all Arc instances are printed from spawned threads.
+    thread::sleep(Duration::from_secs(1));
 }
